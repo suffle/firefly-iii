@@ -96,15 +96,27 @@ class AccountTransformer extends AbstractTransformer
         if (!in_array(strtolower($accountType), ['liability', 'liabilities', 'asset'])) {
             $order = null;
         }
+        $firstTransaction = $this->repository->oldestJournalDate($account);
         $startDate = clone $date;
         $startDate->startOfYear();
+        if ($firstTransaction && $startDate->isBefore($firstTransaction)) {
+            $startDate = $firstTransaction;
+        }
         $endDate = clone $date;
-        $endDate->endOfYear();
-        $periods          = $this->getAccountPeriodOverview($account, $startDate, $endDate);
+        if ($date->isCurrentYear()) {
+            $endDate->endOfMonth();
+        } else {
+            $endDate->endOfYear();
+        }
+
+        $periods = $firstTransaction && $endDate->isBefore($firstTransaction) ? [] : $this->getAccountPeriodOverview($account, $startDate, $endDate);
         return [
             'id'                      => (string)$account->id,
             'created_at'              => $account->created_at->toAtomString(),
             'updated_at'              => $account->updated_at->toAtomString(),
+            'first_transaction_date'  => null !== $firstTransaction ? $firstTransaction->toAtomString() : null,
+            'start_date'              => $startDate->toAtomString(),
+            'end_date'                => $endDate->toAtomString(),
             'active'                  => $account->active,
             'order'                   => $order,
             'name'                    => $account->name,
