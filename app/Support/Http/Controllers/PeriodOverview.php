@@ -133,6 +133,11 @@ trait PeriodOverview
             $entries[]
                              = [
                 'title' => $title,
+                'dateRange' => [
+                    'start' => $currentDate['start']->format('Y-m-d'),
+                    'end' => $currentDate['end']->format('Y-m-d'),
+                ],
+                'month' => $currentDate['start']->format('m'),
                 'route' =>
                     route('accounts.show', [$account->id, $currentDate['start']->format('Y-m-d'), $currentDate['end']->format('Y-m-d')]),
 
