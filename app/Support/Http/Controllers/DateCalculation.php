@@ -90,7 +90,7 @@ trait DateCalculation
         if ($months > 3) {
             $step = '1W';
         }
-        if ($months > 24) {
+        if ($months > 6) {
             $step = '1M';
         }
         if ($months > 100) {
