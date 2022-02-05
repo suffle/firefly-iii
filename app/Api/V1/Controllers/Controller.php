@@ -85,7 +85,7 @@ abstract class Controller extends BaseController
         $bag->set('page', $page);
 
         // some date fields:
-        $dates = ['start', 'end', 'date'];
+        $dates = ['start', 'end', 'date', 'month', 'year'];
         foreach ($dates as $field) {
             $date = request()->query->get($field);
             $obj  = null;

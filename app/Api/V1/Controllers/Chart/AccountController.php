@@ -156,12 +156,19 @@ class AccountController extends Controller
      */
     public function period(Account $account): JsonResponse
     {
-        $dateParam = $this->parameters->get('date');
-        $date = $dateParam ? new Carbon($dateParam) : Carbon::now();
-        $start = clone $date;
-        $end   = clone $date;
-        $start->startOfMonth();
-        $end->endOfMonth();
+        $monthParam = $this->parameters->get('month');
+        $yearParam  = $this->parameters->get('year');
+
+        if ($yearParam) {
+            $date = new Carbon($yearParam);
+            $period = $this->yearPeriod($date);
+        } else {
+            $date = $monthParam ? new Carbon($monthParam) : Carbon::now();
+            $period = $this->monthPeriod($date);
+        }
+
+        $start = clone $period['start'];
+        $end   = clone $period['end'];
         $chartData = [];
         $cache     = new CacheProperties;
         $cache->addProperty('chart.account.period');
@@ -189,6 +196,31 @@ class AccountController extends Controller
         return response()->json($data);
     }
 
+    private function yearPeriod(Carbon $date): array
+    {
+        $start = clone $date;
+        $end   = clone $date;
+        $start->startOfYear();
+        $end->endOfYear();
+
+        return [
+            'start' => $start,
+            'end'   => $end,
+        ];
+    }
+
+    private function monthPeriod(Carbon $date): array
+    {
+        $start = clone $date;
+        $end   = clone $date;
+        $start->startOfMonth();
+        $end->endOfMonth();
+
+        return [
+            'start' => $start,
+            'end'   => $end,
+        ];
+    }
 
     /**
      * @param Carbon              $start
