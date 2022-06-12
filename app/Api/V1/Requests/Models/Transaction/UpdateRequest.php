@@ -84,7 +84,7 @@ class UpdateRequest extends FormRequest
             'notes',
         ];
 
-        $this->stringFields  = [
+        $this->convertStringFields  = [
             'type',
             'currency_code',
             'foreign_currency_code',
@@ -133,7 +133,7 @@ class UpdateRequest extends FormRequest
             $data['fire_webhooks'] = $this->boolean('fire_webhooks', true);
         }
         if ($this->has('group_title')) {
-            $data['group_title'] = $this->string('group_title');
+            $data['group_title'] = $this->convertString('group_title');
         }
 
         return $data;
@@ -181,7 +181,7 @@ class UpdateRequest extends FormRequest
     {
         foreach ($this->integerFields as $fieldName) {
             if (array_key_exists($fieldName, $transaction)) {
-                $current[$fieldName] = $this->integerFromValue((string)$transaction[$fieldName]);
+                $current[$fieldName] = $this->integerFromValue((string) $transaction[$fieldName]);
             }
         }
 
@@ -196,9 +196,9 @@ class UpdateRequest extends FormRequest
      */
     private function getStringData(array $current, array $transaction): array
     {
-        foreach ($this->stringFields as $fieldName) {
+        foreach ($this->convertStringFields as $fieldName) {
             if (array_key_exists($fieldName, $transaction)) {
-                $current[$fieldName] = $this->clearString((string)$transaction[$fieldName], false);
+                $current[$fieldName] = $this->clearString((string) $transaction[$fieldName], false);
             }
         }
 
@@ -215,7 +215,7 @@ class UpdateRequest extends FormRequest
     {
         foreach ($this->textareaFields as $fieldName) {
             if (array_key_exists($fieldName, $transaction)) {
-                $current[$fieldName] = $this->clearString((string)$transaction[$fieldName]);
+                $current[$fieldName] = $this->clearString((string) $transaction[$fieldName]);
             }
         }
 
@@ -233,8 +233,8 @@ class UpdateRequest extends FormRequest
         foreach ($this->dateFields as $fieldName) {
             Log::debug(sprintf('Now at date field %s', $fieldName));
             if (array_key_exists($fieldName, $transaction)) {
-                Log::debug(sprintf('New value: "%s"', (string)$transaction[$fieldName]));
-                $current[$fieldName] = $this->dateFromValue((string)$transaction[$fieldName]);
+                Log::debug(sprintf('New value: "%s"', (string) $transaction[$fieldName]));
+                $current[$fieldName] = $this->dateFromValue((string) $transaction[$fieldName]);
             }
         }
 
@@ -251,7 +251,7 @@ class UpdateRequest extends FormRequest
     {
         foreach ($this->booleanFields as $fieldName) {
             if (array_key_exists($fieldName, $transaction)) {
-                $current[$fieldName] = $this->convertBoolean((string)$transaction[$fieldName]);
+                $current[$fieldName] = $this->convertBoolean((string) $transaction[$fieldName]);
             }
         }
 
@@ -293,7 +293,7 @@ class UpdateRequest extends FormRequest
             'transactions.*.order'                  => 'numeric|min:0',
 
             // group id:
-            'transactions.*.transaction_journal_id' => ['numeric', 'exists:transaction_journals,id', new BelongsUser],
+            'transactions.*.transaction_journal_id' => ['nullable', 'numeric', new BelongsUser],
 
 
             // currency info
